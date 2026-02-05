@@ -24,6 +24,8 @@ def jinja_env():
         undefined=StrictUndefined,
         keep_trailing_newline=True,
         autoescape=False,
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
 
 
@@ -35,6 +37,10 @@ def clean_dir(path: Path):
 
 def copy_or_render(src: Path, dst: Path, env, context):
     dst.parent.mkdir(parents=True, exist_ok=True)
+
+    # Rename _gitignore to .gitignore
+    if src.name.startswith("_gitignore"):
+        dst = dst.with_name(dst.name.replace("_gitignore", ".gitignore", 1))
 
     if src.suffix == ".j2":
         template = env.get_template(str(src.relative_to(SRC)))

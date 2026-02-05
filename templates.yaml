@@ -4,15 +4,18 @@
   blocks: 
     - devcontainer
     - data/small
+    - assets/small
 - id: r-medium
   size: medium
   language: r
   blocks: 
     - devcontainer
     - data/medium-large
+    - assets/medium-large
 - id: r-large
   size: large
   language: r
   blocks: 
     - devcontainer
     - data/medium-large
+    - assets/medium-large

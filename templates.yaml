@@ -1,0 +1,15 @@
+- id: r-small
+  size: small
+  language: r
+  blocks: 
+    - devcontainer
+- id: r-medium
+  size: medium
+  language: r
+  blocks: 
+    - devcontainer
+- id: r-large
+  size: large
+  language: r
+  blocks: 
+    - devcontainer

@@ -11,6 +11,7 @@ BLOCKS = SRC / "blocks"
 FILES = SRC / "files"
 OUT = ROOT / "out"
 MANIFEST = ROOT / "templates.yaml"
+CONTENT = SRC / "atoms"
 
 
 def load_manifest():
@@ -74,6 +75,7 @@ def render_template(spec: dict):
         "id": spec["id"],
         "size": spec["size"],
         "language": spec["language"],
+        "atoms": load_atoms(),
     }
 
     # 1. global files
@@ -86,6 +88,34 @@ def render_template(spec: dict):
         if not block_dir.exists():
             raise RuntimeError(f"Unknown block: {block}")
         materialize(block_dir, outdir, env, context)
+
+
+def load_atoms():
+    atoms = {}
+
+    if not CONTENT.exists():
+        return atoms
+
+    for atom_dir in CONTENT.iterdir():
+        if not atom_dir.is_dir():
+            continue
+
+        atom_name = atom_dir.name
+        atoms[atom_name] = {}
+
+        for f in atom_dir.iterdir():
+            if f.is_dir():
+                continue
+
+            key = f.stem
+
+            if f.suffix in {".yml", ".yaml"}:
+                with open(f, "r") as fh:
+                    atoms[atom_name][key] = yaml.safe_load(fh)
+            else:
+                atoms[atom_name][key] = f.read_text()
+
+    return atoms
 
 
 def main():

@@ -12,6 +12,7 @@
     - devcontainer
     - data/medium-large
     - assets/medium-large
+    - quarto
 - id: r-large
   size: large
   language: r
@@ -20,3 +21,4 @@
     - data/medium-large
     - assets/medium-large
     - tex
+    - quarto

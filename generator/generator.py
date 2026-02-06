@@ -112,24 +112,53 @@ def load_atoms():
     if not CONTENT.exists():
         return atoms
 
-    for atom_dir in CONTENT.iterdir():
-        if not atom_dir.is_dir():
+    for entry in CONTENT.iterdir():
+        # --------------------------------------------------
+        # Case 1: atom declared as a YAML file
+        # --------------------------------------------------
+        if entry.is_file() and entry.suffix in {".yml", ".yaml"}:
+            atom_name = entry.stem
+
+            if atom_name in atoms:
+                raise RuntimeError(
+                    f"Atom name collision: '{atom_name}' "
+                    "is defined both as a file and a directory"
+                )
+
+            with open(entry, "r") as fh:
+                atoms[atom_name] = yaml.safe_load(fh)
+
+        # --------------------------------------------------
+        # Case 2: atom declared as a directory
+        # --------------------------------------------------
+        elif entry.is_dir():
+            atom_name = entry.name
+
+            if atom_name in atoms:
+                raise RuntimeError(
+                    f"Atom name collision: '{atom_name}' "
+                    "is defined both as a directory and a file"
+                )
+
+            atoms[atom_name] = {}
+
+            for f in entry.iterdir():
+                if f.is_dir():
+                    continue
+
+                key = f.stem
+
+                if f.suffix in {".yml", ".yaml"}:
+                    with open(f, "r") as fh:
+                        atoms[atom_name][key] = yaml.safe_load(fh)
+                else:
+                    atoms[atom_name][key] = f.read_text()
+
+        # --------------------------------------------------
+        # Ignore everything else
+        # --------------------------------------------------
+        else:
             continue
-
-        atom_name = atom_dir.name
-        atoms[atom_name] = {}
-
-        for f in atom_dir.iterdir():
-            if f.is_dir():
-                continue
-
-            key = f.stem
-
-            if f.suffix in {".yml", ".yaml"}:
-                with open(f, "r") as fh:
-                    atoms[atom_name][key] = yaml.safe_load(fh)
-            else:
-                atoms[atom_name][key] = f.read_text()
 
     return atoms
 

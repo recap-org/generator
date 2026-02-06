@@ -5,6 +5,7 @@
     - devcontainer
     - data/small
     - assets/small
+    - src/r-small
 - id: r-medium
   size: medium
   language: r
@@ -13,6 +14,7 @@
     - data/medium-large
     - assets/medium-large
     - quarto
+    - src/r-medium
 - id: r-large
   size: large
   language: r
@@ -22,3 +24,4 @@
     - assets/medium-large
     - tex
     - quarto
+    - src/r-large

@@ -1,4 +1,4 @@
-\def\anonymized{0} % uncomment to compile the non-anonymized version of the document
+\def\anonymized{0} % uncomment to compile a non-anonymized version of the document
 % \def\anonymized{1} % uncomment to compile the anonymized version of the document
 
 \documentclass[11pt]{article}
@@ -35,16 +35,15 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
-% \externaldocument{../appendix/main} % uncomment to tie to an external appendix (see appendix template; use relative paths)
+% \externaldocument{../article/main} % uncomment to tie to the main manuscript (use relative path)
 
 \title{
-  The Theory of Everything: a Short Primer
-  % \thanks{Acknowledgements}
+  Online Appendix. Title
 }
 \author{
-  Morgan Doe
+  << atoms.author.first_name >> << atoms.author.last_name >>
   \thanks{
-    Aix Marseille School of Economics, {\tt \href{mailto:morgan.doe@univ-amu.fr}{morgan.doe@univ-amu.fr}.}
+    << atoms.author.institution >>, {\tt \href{mailto:<< atoms.author.email >>}{<< atoms.author.email >>}.}
   }
 }
 \date{\today}
@@ -53,7 +52,7 @@
 \if\anonymized0
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{Theory of Everything}
+\lhead{Online Appendix. Title}
 \rhead{
   Doe
 }
@@ -67,57 +66,29 @@
 \linenumbers % add line numbers
 \fi
 
+\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
 \begin{document}
 \sloppy % avoid overfull hboxes
 
 \if\anonymized0
 \maketitle
-%TC:ignore
-% \begin{abstract}
-
-% \end{abstract}
-%TC:endignore
 \fi
 
-A nice paper that follows up on the work of \citet{Doe}.
+\newpage
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
 
-\begin{table}[H]
-  \centering
-  \input{./assets/tables/table.tex}
-  \caption{A table generated with R}
-  \label{tab:r_table}
-\end{table}
-
-\begin{figure}
-  \centering
-  \includegraphics{./assets/figures/figure.pdf}
-  \caption{A figure generated with R}
-  \label{fig:r_figure}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{./assets/static/dk.jpg}
-  \caption{A static figure. Photo by \href{https://unsplash.com/@ninjason?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash}{Jason Leung} on \href{https://unsplash.com/photos/donkey-kong-arcade-game-screen-with-1981-date-c5tiCWrZADc?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash}{Unsplash}
-  }
-  \label{fig:nice_figure}
-\end{figure}
+\section{Introduction}
 
 % ---- Bibliography ----
 \newpage
 %TC:ignore
 \bibliographystyle{aer}
-\bibliography{./assets/references}
-%TC:endignore
-
-\newpage
-
-% ---- Appendix ----
-%TC:ignore
-% \appendix
-% \appendixpage
-% \addappheadtotoc
-% Appendix content
+\bibliography{assets/references}
 %TC:endignore
 
 \end{document}

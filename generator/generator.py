@@ -13,21 +13,44 @@ OUT = ROOT / "out"
 MANIFEST = ROOT / "templates.yaml"
 CONTENT = SRC / "atoms"
 
+# Delimiter overrides by file extension
+JINJA_ENV_OVERRIDES = {
+    ".tex": {
+        "block_start_string": "<!",
+        "block_end_string": "!>",
+        "variable_start_string": "<<",
+        "variable_end_string": ">>",
+        "comment_start_string": "<#",
+        "comment_end_string": "#>",
+    },
+}
+
 
 def load_manifest():
     with open(MANIFEST, "r") as f:
         return yaml.safe_load(f)
 
 
-def jinja_env():
-    return Environment(
-        loader=FileSystemLoader(SRC),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        autoescape=False,
-        lstrip_blocks=True,
-        trim_blocks=True,
-    )
+def jinja_env(file_ext=None):
+    """Create a Jinja2 environment, optionally with custom delimiters for specific file types.
+
+    Args:
+        file_ext: File extension (e.g., '.tex') to use custom delimiters, or None for defaults.
+    """
+    kwargs = {
+        "loader": FileSystemLoader(SRC),
+        "undefined": StrictUndefined,
+        "keep_trailing_newline": True,
+        "autoescape": False,
+        "lstrip_blocks": True,
+        "trim_blocks": True,
+    }
+
+    # Apply delimiter overrides if specified for this file type
+    if file_ext and file_ext in JINJA_ENV_OVERRIDES:
+        kwargs.update(JINJA_ENV_OVERRIDES[file_ext])
+
+    return Environment(**kwargs)
 
 
 def clean_dir(path: Path):
@@ -43,7 +66,7 @@ def create_symlink(dst: Path, target: str):
     dst.symlink_to(target)
 
 
-def copy_or_render(src: Path, dst: Path, env, context):
+def copy_or_render(src: Path, dst: Path, context):
     dst.parent.mkdir(parents=True, exist_ok=True)
 
     # Rename _gitignore to .gitignore
@@ -60,6 +83,15 @@ def copy_or_render(src: Path, dst: Path, env, context):
 
     # Handle Jinja templates
     if src.suffix == ".j2":
+        # Determine the target file extension (what it will be after .j2 is removed)
+        # e.g., ".tex" from "main.tex.j2"
+        target_ext = "".join(dst.suffixes[:-1])
+        if not target_ext:
+            # If there's no extension before .j2, check the stem
+            target_ext = Path(dst.stem).suffix  # e.g., ".tex" from "main.tex"
+
+        # Create environment with appropriate delimiters for the target file type
+        env = jinja_env(target_ext)
         template = env.get_template(str(src.relative_to(SRC)))
         dst = dst.with_suffix("")  # drop .j2
         dst.write_text(template.render(context))
@@ -67,14 +99,14 @@ def copy_or_render(src: Path, dst: Path, env, context):
         shutil.copy2(src, dst)
 
 
-def materialize(source_root: Path, outdir: Path, env, context):
+def materialize(source_root: Path, outdir: Path, context):
     for src in source_root.rglob("*"):
         if src.is_dir():
             continue
 
         rel = src.relative_to(source_root)
         dst = outdir / rel
-        copy_or_render(src, dst, env, context)
+        copy_or_render(src, dst, context)
 
 
 def render_template(spec: dict):
@@ -85,8 +117,6 @@ def render_template(spec: dict):
     print(f"→ Rendering {template_id}")
     clean_dir(outdir)
 
-    env = jinja_env()
-
     context = {
         "id": spec["id"],
         "size": spec["size"],
@@ -96,14 +126,14 @@ def render_template(spec: dict):
 
     # 1. global files
     if FILES.exists():
-        materialize(FILES, outdir, env, context)
+        materialize(FILES, outdir, context)
 
     # 2. blocks (in order)
     for block in blocks:
         block_dir = BLOCKS / block
         if not block_dir.exists():
             raise RuntimeError(f"Unknown block: {block}")
-        materialize(block_dir, outdir, env, context)
+        materialize(block_dir, outdir, context)
 
 
 def load_atoms():

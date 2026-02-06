@@ -36,6 +36,13 @@ def clean_dir(path: Path):
     path.mkdir(parents=True)
 
 
+def create_symlink(dst: Path, target: str):
+    if dst.exists() or dst.is_symlink():
+        dst.unlink()
+
+    dst.symlink_to(target)
+
+
 def copy_or_render(src: Path, dst: Path, env, context):
     dst.parent.mkdir(parents=True, exist_ok=True)
 
@@ -43,6 +50,15 @@ def copy_or_render(src: Path, dst: Path, env, context):
     if src.name.startswith("_gitignore"):
         dst = dst.with_name(dst.name.replace("_gitignore", ".gitignore", 1))
 
+    # Handle symlink sentinel
+    if src.suffix == ".symlink":
+        link_name = dst.with_suffix("")  # remove .symlink
+        target = src.read_text().strip()
+
+        create_symlink(link_name, target)
+        return
+
+    # Handle Jinja templates
     if src.suffix == ".j2":
         template = env.get_template(str(src.relative_to(SRC)))
         dst = dst.with_suffix("")  # drop .j2

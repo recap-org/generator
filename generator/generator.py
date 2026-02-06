@@ -143,52 +143,53 @@ def load_atoms():
         return atoms
 
     for entry in CONTENT.iterdir():
+        name = entry.stem if entry.is_file() else entry.name
+
+        if name in atoms:
+            raise RuntimeError(f"Atom name collision: '{name}'")
+
         # --------------------------------------------------
-        # Case 1: atom declared as a YAML file
+        # Case 1: YAML atom (structured)
         # --------------------------------------------------
         if entry.is_file() and entry.suffix in {".yml", ".yaml"}:
-            atom_name = entry.stem
-
-            if atom_name in atoms:
-                raise RuntimeError(
-                    f"Atom name collision: '{atom_name}' "
-                    "is defined both as a file and a directory"
-                )
-
             with open(entry, "r") as fh:
-                atoms[atom_name] = yaml.safe_load(fh)
+                atoms[name] = yaml.safe_load(fh)
 
         # --------------------------------------------------
-        # Case 2: atom declared as a directory
+        # Case 2: single-file atom (raw text)
+        # --------------------------------------------------
+        elif entry.is_file():
+            atoms[name] = entry.read_text()
+
+        # --------------------------------------------------
+        # Case 3: directory atom (multi-format)
         # --------------------------------------------------
         elif entry.is_dir():
-            atom_name = entry.name
-
-            if atom_name in atoms:
-                raise RuntimeError(
-                    f"Atom name collision: '{atom_name}' "
-                    "is defined both as a directory and a file"
-                )
-
-            atoms[atom_name] = {}
+            atom = {}
 
             for f in entry.iterdir():
                 if f.is_dir():
                     continue
 
-                key = f.stem
+                if not f.suffix:
+                    raise RuntimeError(
+                        f"Atom file '{f}' must have an extension"
+                    )
+
+                key = f.suffix.lstrip(".")
+
+                if key in atom:
+                    raise RuntimeError(
+                        f"Duplicate atom key '{key}' in '{entry.name}'"
+                    )
 
                 if f.suffix in {".yml", ".yaml"}:
                     with open(f, "r") as fh:
-                        atoms[atom_name][key] = yaml.safe_load(fh)
+                        atom[key] = yaml.safe_load(fh)
                 else:
-                    atoms[atom_name][key] = f.read_text()
+                    atom[key] = f.read_text()
 
-        # --------------------------------------------------
-        # Ignore everything else
-        # --------------------------------------------------
-        else:
-            continue
+            atoms[entry.name] = atom
 
     return atoms
 

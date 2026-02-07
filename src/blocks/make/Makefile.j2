@@ -106,11 +106,12 @@ help: ## Display this help message
 {% if language == 'r' %}
 # build_qmd
 # -----------
-# Renders a Quarto document (.qmd) and generates a PDF output in the bin directory
+# Renders a Quarto document (.qmd) and generates a PDF output in the ./out directory
+# (e.g., ./src/analysis/main.qmd -> ./bin/src/analysis/main.pdf)
 # Arguments:
-#   $1 - Path to the .qmd file (e.g., src/analysis/main.qmd -> bin/src/analysis/main.pdf)
+#   $1 - Path to the .qmd file (e.g., ./src/analysis/main.qmd)
 define build_qmd
-	$(eval TARGET := $(patsubst %.qmd,bin/%.pdf,$(1)))
+	$(eval TARGET := $(patsubst %.qmd,out/%.pdf,$(1)))
 	@echo "📄 $(GREEN_START)Rendering $(1) -> $(TARGET)...$(GREEN_END)"
 	@quarto render $(1)
 	@echo "✅ $(GREEN_START)Done!$(GREEN_END)"
@@ -120,7 +121,7 @@ endef
 # -----------
 # Run an R script
 # Arguments:
-#   $1 - Path to the .R file (e.g., src/lib/io.R)
+#   $1 - Path to the .R file (e.g., ./src/lib/io.R)
 define build_R
 	@echo "📄 $(GREEN_START)Running $(1)...$(GREEN_END)"
 	@Rscript $(1)
@@ -133,9 +134,9 @@ endef
 # -----------
 # Compiles a LaTeX file in ./tex/DIR/main.tex and copies the resulting PDF to ./out/tex/DIR.pdf
 # Arguments:
-#   $1 - Path to the LaTeX main.tex file (e.g., tex/article/main.tex)
+#   $1 - Path to the LaTeX main.tex file (e.g., ./tex/article/main.tex)
 define build_tex
-	$(eval TARGET := $(patsubst tex/%/main.tex,bin/tex/%.pdf,$(1)))
+	$(eval TARGET := $(patsubst tex/%/main.tex,out/tex/%.pdf,$(1)))
 	@echo "📝 $(GREEN_START)Compiling $(1) -> $(TARGET)...$(GREEN_END)"
 	@mkdir -p ./out/tex/
 	@cd $(dir $(1)) and\

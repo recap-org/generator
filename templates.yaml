@@ -15,6 +15,7 @@
     - assets/medium-large
     - quarto
     - src/r-medium
+    - tests/r
 - id: r-large
   size: large
   language: r
@@ -25,3 +26,4 @@
     - tex
     - quarto
     - src/r-large
+    - tests/r

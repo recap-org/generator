@@ -5,19 +5,19 @@ export
 # R targets
 LIBS = $(wildcard ./src/lib/*.R)
 	{% if size == 'large' %}
-DATA = $(patsubst ./src/data/%.qmd, ./bin/src/data/%.pdf, $(wildcard ./src/data/*.qmd))
-ANALYSIS = $(patsubst ./src/analysis/%.qmd, ./bin/src/analysis/%.pdf, $(wildcard ./src/analysis/*.qmd))
+DATA = $(patsubst ./src/data/%.qmd, ./out/src/data/%.pdf, $(wildcard ./src/data/*.qmd))
+ANALYSIS = $(patsubst ./src/analysis/%.qmd, ./out/src/analysis/%.pdf, $(wildcard ./src/analysis/*.qmd))
 	{% endif %}
 
 {% endif %}
 {% if size == 'large' %}
 # LaTex targets
-PDF_FILES = $(patsubst ./tex/%,./bin/tex/%.pdf,$(wildcard ./tex/*)) 
+PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
 
 {% endif%}
 # Main targets
 {% if language == 'r' and size == 'medium' %}
-all: ./bin/src/main.pdf
+all: ./out/src/main.pdf
 .PHONY: all fresh clear-cache tests
 {% endif %}
 {% if language == 'r' and size == 'large' %}
@@ -31,28 +31,28 @@ all: $(PDF_FILES)
 
 {% if language == 'r' and size == 'medium' %}
 # Step 1: Data
-./bin/src/data.pdf: ./src/data.qmd $(R_LIBS)
+./out/src/data.pdf: ./src/data.qmd $(R_LIBS)
 	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
 	@$(call build_qmd,$<)
 
 # Step 2: Analysis
-./bin/src/main.pdf: ./src/main.qmd ./bin/src/data.pdf $(R_LIBS)
+./out/src/main.pdf: ./src/main.qmd ./out/src/data.pdf $(R_LIBS)
 	@echo "📊 $(GREEN_START)Running analysis$(GREEN_END)"
 	@$(call build_qmd,$<)
 {% endif %}
 {% if language == 'r' and size == 'large' %}
 # Step 1: Data
-./bin/src/data/%.pdf: ./src/data/%.qmd $(LIBS)
+./out/src/data/%.pdf: ./src/data/%.qmd $(LIBS)
 	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
 	@$(call build_qmd,$<)
 
 # Step 2: Analysis
-./bin/src/analysis/%.pdf: ./src/analysis/%.qmd $(DATA) $(LIBS)
+./out/src/analysis/%.pdf: ./src/analysis/%.qmd $(DATA) $(LIBS)
 	@echo "📊 $(GREEN_START)Running analysis$(GREEN_END)"
 	@$(call build_qmd,$<)
 
 # Step 3: Paper
-./bin/tex/%.pdf: ./tex/%/main.tex $(ANALYSIS)
+./out/tex/%.pdf: ./tex/%/main.tex $(ANALYSIS)
 	@$(call build_tex,$<)
 {% endif %}
 
@@ -67,7 +67,7 @@ clean: ## Clean up intermediate latex files
 {% endif %}
 fresh: ## Delete all targets
 	@echo "😵 $(GREEN_START)Deleting all targets and intermediary files...$(GREEN_END)"
-	@find ./bin -type f -name "*.pdf" -delete
+	@find ./out -type f -name "*.pdf" -delete
 	@find ./assets/tables -type f ! -name ".gitignore" -delete
 	@find ./assets/figures -type f ! -name ".gitignore" -delete
 	@find ./data/processed -type f ! -name ".gitignore" -delete
@@ -131,13 +131,13 @@ endef
 {% if size == 'large' %}
 # build_tex
 # -----------
-# Compiles a LaTeX file in ./tex/DIR/main.tex and copies the resulting PDF to ./bin/tex/DIR.pdf
+# Compiles a LaTeX file in ./tex/DIR/main.tex and copies the resulting PDF to ./out/tex/DIR.pdf
 # Arguments:
 #   $1 - Path to the LaTeX main.tex file (e.g., tex/article/main.tex)
 define build_tex
 	$(eval TARGET := $(patsubst tex/%/main.tex,bin/tex/%.pdf,$(1)))
 	@echo "📝 $(GREEN_START)Compiling $(1) -> $(TARGET)...$(GREEN_END)"
-	@mkdir -p ./bin/tex/
+	@mkdir -p ./out/tex/
 	@cd $(dir $(1)) and\
 		latexmk -pdf -quiet\
 		-interaction=nonstopmode $(notdir $(1))

@@ -121,6 +121,8 @@ def render_template(spec: dict):
         "id": spec["id"],
         "size": spec["size"],
         "language": spec["language"],
+        "setup": spec["setup"],
+        "run": spec["run"],
         "atoms": load_atoms(),
     }
 

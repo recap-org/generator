@@ -4,10 +4,10 @@ export
 {% if language == 'r' %}
 # R targets
 LIBS = $(wildcard ./src/lib/*.R)
-{% if size == 'large' %}
+	{% if size == 'large' %}
 DATA = $(patsubst ./src/data/%.qmd, ./bin/src/data/%.pdf, $(wildcard ./src/data/*.qmd))
 ANALYSIS = $(patsubst ./src/analysis/%.qmd, ./bin/src/analysis/%.pdf, $(wildcard ./src/analysis/*.qmd))
-{% endif %}
+	{% endif %}
 
 {% endif %}
 {% if size == 'large' %}

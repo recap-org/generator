@@ -18,12 +18,12 @@ PDF_FILES = $(patsubst ./tex/%,./bin/tex/%.pdf,$(wildcard ./tex/*))
 # Main targets
 {% if language == 'r' and size == 'medium' %}
 all: ./bin/src/main.pdf
-.PHONY: all fresh clear-cache tests initialize
+.PHONY: all fresh clear-cache tests
 {% endif %}
 {% if language == 'r' and size == 'large' %}
 all: $(PDF_FILES)
 .SECONDARY: $(ANALYSIS) $(DATA)
-.PHONY: all clean fresh clear-cache tests initialize
+.PHONY: all fresh clear-cache tests symlinks 
 {% endif %}
 
 

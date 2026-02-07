@@ -1,7 +1,8 @@
 ---
 title: "{{ atoms.paper.title }}"
+# date automatically set to today
 date: "`r Sys.Date()`"
-author: "{{ atoms.paper.first_name}} {{ atoms.paper.last_name }}"
+author: "{{ atoms.author.first_name}} {{ atoms.author.last_name }}"
 # see ./_quarto.yml for default options
 bibliography: ../assets/references.bib
 ---
@@ -10,14 +11,7 @@ bibliography: ../assets/references.bib
 #| label: setup
 #| echo: false
 
-# load packages; hide startup messages for pretty output
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(modelsummary))
-
-# load functions
-source("./src/lib/io.R")
-
-# read data; we know the column types, so we can suppress the messages
+{{ atoms.r_data_setup }}
 df <- read_csv("./data/data.csv", show_col_types = FALSE)
 ```
 
@@ -27,54 +21,28 @@ df <- read_csv("./data/data.csv", show_col_types = FALSE)
 
 # Data
 
-```{r}
-#| label: data-cleaning
-#| tbl-cap: Data summary
-
-df <- df |> mutate(
-  attendance_percent = attendance_percent / 100,
-  previous_scores = previous_scores / 100,
-  exam_score = exam_score / 100
-)
-
-datasummary_skim(
-  df,
-  fun_numeric = list(
-    Mean = Mean,
-    SD = SD
-  ),
-  escape = FALSE
-)
-```
+{{ atoms.r_data_clean }}
 
 # Results
 
-```{r}
-#| label: analysis
-
-models <- list(
-  lm(exam_score ~ previous_scores, data = df),
-  lm(exam_score ~ hours_studied + sleep_hours + attendance_percent + previous_scores, data = df)
-)
-```
+{{ atoms.r_analysis }}
 
 {{ atoms.results1.md }}
 
 ```{r}
 #| label: tbl-table
-#| tbl-cap: {{ assets.paper.table_caption }}
+#| tbl-cap: {{ atoms.paper.table_caption }}
 
 modelsummary(models)
 ```
 
 ```{r}
 #| label: fig-figure
-#| fig-cap: {{ assets.paper.figure_caption }}
+#| fig-cap: {{ atoms.paper.figure_caption }}
 
 modelplot(models)
 ```
 
 {{ atoms.results2.md }}
-
 
 # References

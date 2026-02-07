@@ -1,0 +1,18 @@
+---
+title: "Data cleaning"
+# date automatically set to today
+date: "`r Sys.Date()`"
+# see ./_quarto.yml for default options
+bibliography: ../assets/references.bib
+---
+
+```{r}
+#| label: setup
+
+{{ atoms.r_data_setup }}
+df <- read_csv("./data/raw/data.csv", show_col_types = FALSE)
+```
+
+{{ atoms.r_data_clean }}
+
+{{ atoms.r_data_write }}

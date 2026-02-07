@@ -1,0 +1,37 @@
+---
+title: "Analysis"
+# date automatically set to today
+date: "`r Sys.Date()`"
+# see ./_quarto.yml for default options
+bibliography: ../assets/references.bib
+---
+
+{{ atoms.r_analysis_setup }}
+
+# Introduction
+
+{{ atoms.intro.md }}
+
+# Results
+
+{{ atoms.r_analysis }}
+
+{{ atoms.results1.md }}
+
+```{r}
+#| label: tbl-table
+#| tbl-cap: {{ atoms.paper.table_caption }}
+
+modelsummary(models)
+```
+
+```{r}
+#| label: fig-figure
+#| fig-cap: {{ atoms.paper.figure_caption }}
+
+modelplot(models)
+```
+
+{{ atoms.results2.md }}
+
+# References

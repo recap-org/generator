@@ -16,6 +16,7 @@
     - quarto
     - src/r-medium
     - tests/r
+    - make
 - id: r-large
   size: large
   language: r
@@ -27,3 +28,4 @@
     - quarto
     - src/r-large
     - tests/r
+    - make

@@ -49,7 +49,7 @@ jobs:
   deploy:
     needs: ci
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
       - name: Checkout repository
@@ -77,8 +77,8 @@ jobs:
       
       - name: Configure git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "recap-org-bot"
+          git config --global user.email "recap-org-bot@users.noreply.github.com"
       
       - name: Deploy templates
         run: python generator/deploy.py

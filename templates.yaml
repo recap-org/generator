@@ -8,7 +8,7 @@ templates:
     blocks: 
       - devcontainer
       - data/small
-      - assets/small
+      - assets/small-medium
       - quarto
       - src/r-small
       - readme
@@ -21,7 +21,7 @@ templates:
     blocks: 
       - devcontainer
       - data/medium-large
-      - assets/medium-large
+      - assets/small-medium
       - quarto
       - src/r-medium
       - tests/r
@@ -36,7 +36,7 @@ templates:
     blocks: 
       - devcontainer
       - data/medium-large
-      - assets/medium-large
+      - assets/large
       - tex
       - quarto
       - src/r-large

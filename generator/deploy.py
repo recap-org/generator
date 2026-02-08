@@ -9,6 +9,8 @@ import tempfile
 from pathlib import Path
 from datetime import datetime
 
+from models import Manifest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "templates.yaml"
@@ -146,27 +148,31 @@ def deploy_template(template_id):
 
 
 def main():
-    # Load templates
+    # Load and validate templates
     with open(MANIFEST, "r") as f:
-        manifest = yaml.safe_load(f)
-    
-    templates = manifest["templates"]
-    print(f"Deploying {len(templates)} templates...")
+        manifest_data = yaml.safe_load(f)
+
+    try:
+        manifest = Manifest(**manifest_data)
+    except Exception as e:
+        print(f"✗ Invalid manifest: {e}")
+        sys.exit(1)
+
+    print(f"Deploying {len(manifest.templates)} templates...")
 
     # Deploy each template
     failed_templates = []
+    templates = manifest.templates
     for spec in templates:
-        template_id = spec["id"]
-
-        success = deploy_template(template_id)
+        success = deploy_template(spec.id)
 
         if not success:
-            failed_templates.append(template_id)
+            failed_templates.append(spec.id)
             # Fail fast - exit on first failure
             print(f"\n{'='*80}")
             print(f"DEPLOYMENT FAILED")
             print(f"{'='*80}")
-            print(f"✗ Failed to deploy template: {template_id}")
+            print(f"✗ Failed to deploy template: {spec.id}")
             print(f"  Aborting deployment process")
             sys.exit(1)
 

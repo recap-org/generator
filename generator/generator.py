@@ -3,6 +3,7 @@ import shutil
 import yaml
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from models import Manifest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -202,12 +203,15 @@ def load_atoms():
 
 
 def main():
-    manifest = load_manifest()
-    release = manifest["release"]
-    templates = manifest["templates"]
+    manifest_data = load_manifest()
+    try:
+        manifest = Manifest(**manifest_data)
+    except Exception as e:
+        print(f"✗ Invalid manifest: {e}")
+        exit(1)
 
-    for spec in templates:
-        render_template(spec, release)
+    for spec in manifest.templates:
+        render_template(spec.model_dump(), manifest.release)
 
 
 if __name__ == "__main__":

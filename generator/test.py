@@ -6,6 +6,8 @@ import sys
 import yaml
 from pathlib import Path
 
+from models import Manifest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "templates.yaml"
@@ -105,25 +107,26 @@ def test_template(template_id, setup_cmd, run_cmd, test_cmd=None):
 
 
 def main():
-    # Load templates
+    # Load and validate templates
     with open(MANIFEST, "r") as f:
-        manifest = yaml.safe_load(f)
-    
-    templates = manifest["templates"]
-    print(f"Testing {len(templates)} templates...")
+        manifest_data = yaml.safe_load(f)
+
+    try:
+        manifest = Manifest(**manifest_data)
+    except Exception as e:
+        print(f"✗ Invalid manifest: {e}")
+        sys.exit(1)
+
+    print(f"Testing {len(manifest.templates)} templates...")
 
     # Test each template
     failed_templates = []
+    templates = manifest.templates
     for spec in templates:
-        template_id = spec["id"]
-        setup_cmd = spec["setup"]
-        run_cmd = spec["run"]
-        test_cmd = spec.get("test")  # Optional test command
-
-        success = test_template(template_id, setup_cmd, run_cmd, test_cmd)
+        success = test_template(spec.id, spec.setup, spec.run, spec.test)
 
         if not success:
-            failed_templates.append(template_id)
+            failed_templates.append(spec.id)
 
     # Summary
     print(f"\n{'='*80}")

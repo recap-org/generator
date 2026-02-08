@@ -139,7 +139,7 @@ define build_tex
 	$(eval TARGET := $(patsubst tex/%/main.tex,out/tex/%.pdf,$(1)))
 	@echo "📝 $(GREEN_START)Compiling $(1) -> $(TARGET)...$(GREEN_END)"
 	@mkdir -p ./out/tex/
-	@cd $(dir $(1)) and\
+	@cd $(dir $(1)) &&\
 		latexmk -pdf -quiet\
 		-interaction=nonstopmode $(notdir $(1))
 	@cp $(basename $(1)).pdf $(TARGET)

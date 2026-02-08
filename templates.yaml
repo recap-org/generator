@@ -24,7 +24,7 @@ templates:
       - assets/small-medium
       - quarto
       - src/r-medium
-      - tests/r
+      - tests/r/medium
       - make
       - readme
   - id: r-large
@@ -40,6 +40,6 @@ templates:
       - tex
       - quarto
       - src/r-large
-      - tests/r
+      - tests/r/large
       - make
       - readme

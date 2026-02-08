@@ -35,7 +35,7 @@ def run_command(cmd, log_file, cwd=None):
     return result.returncode
 
 
-def test_template(template_id, setup_cmd, run_cmd):
+def test_template(template_id, setup_cmd, run_cmd, test_cmd=None):
     """Test a single template in its dev container."""
     template_dir = OUT / template_id
     log_file = LOGS / f"test-{template_id}.log"
@@ -86,6 +86,20 @@ def test_template(template_id, setup_cmd, run_cmd):
         print(f"  See log: {log_file}")
         return False
 
+    # Step 4: Run test command if specified
+    if test_cmd:
+        print(f"→ Running test command: {test_cmd}")
+        exit_code = run_command(
+            ["devcontainer", "exec", "--workspace-folder", str(template_dir),
+             "bash", "-c", test_cmd],
+            log_file
+        )
+
+        if exit_code != 0:
+            print(f"✗ Test command failed for {template_id}")
+            print(f"  See log: {log_file}")
+            return False
+
     print(f"✓ Template {template_id} passed all tests")
     return True
 
@@ -103,8 +117,9 @@ def main():
         template_id = spec["id"]
         setup_cmd = spec["setup"]
         run_cmd = spec["run"]
+        test_cmd = spec.get("test")  # Optional test command
 
-        success = test_template(template_id, setup_cmd, run_cmd)
+        success = test_template(template_id, setup_cmd, run_cmd, test_cmd)
 
         if not success:
             failed_templates.append(template_id)

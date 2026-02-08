@@ -15,6 +15,7 @@
   language: r
   setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
   run: make
+  test: make tests
   blocks: 
     - devcontainer
     - data/medium-large
@@ -29,6 +30,7 @@
   language: r
   setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
   run: make
+  test: make tests
   blocks: 
     - devcontainer
     - data/medium-large

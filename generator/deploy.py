@@ -148,8 +148,9 @@ def deploy_template(template_id):
 def main():
     # Load templates
     with open(MANIFEST, "r") as f:
-        templates = yaml.safe_load(f)
-
+        manifest = yaml.safe_load(f)
+    
+    templates = manifest["templates"]
     print(f"Deploying {len(templates)} templates...")
 
     # Deploy each template

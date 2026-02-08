@@ -113,7 +113,7 @@ def materialize(source_root: Path, outdir: Path, context):
         copy_or_render(src, dst, context)
 
 
-def render_template(spec: dict):
+def render_template(spec: dict, release: str):
     template_id = spec["id"]
     blocks = spec.get("blocks", [])
 
@@ -127,6 +127,7 @@ def render_template(spec: dict):
         "language": spec["language"],
         "setup": spec["setup"],
         "run": spec["run"],
+        "release": release,
         "atoms": load_atoms(),
     }
 
@@ -201,10 +202,12 @@ def load_atoms():
 
 
 def main():
-    templates = load_manifest()
+    manifest = load_manifest()
+    release = manifest["release"]
+    templates = manifest["templates"]
 
     for spec in templates:
-        render_template(spec)
+        render_template(spec, release)
 
 
 if __name__ == "__main__":

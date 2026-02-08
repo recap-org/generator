@@ -107,8 +107,9 @@ def test_template(template_id, setup_cmd, run_cmd, test_cmd=None):
 def main():
     # Load templates
     with open(MANIFEST, "r") as f:
-        templates = yaml.safe_load(f)
-
+        manifest = yaml.safe_load(f)
+    
+    templates = manifest["templates"]
     print(f"Testing {len(templates)} templates...")
 
     # Test each template

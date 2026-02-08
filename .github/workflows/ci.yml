@@ -36,13 +36,16 @@ jobs:
       - name: Run tests
         run: python generator/test.py
       
-      - name: Upload test logs
+      - name: Upload test results and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs
-          path: logs/
+          name: test-results
+          path: |
+            logs/
+            out/*/out/
           retention-days: 30
+          if-no-files-found: ignore
   deploy:
     needs: ci
     runs-on: ubuntu-latest

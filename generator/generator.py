@@ -3,6 +3,7 @@ import shutil
 import yaml
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from models import Manifest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +24,10 @@ JINJA_ENV_OVERRIDES = {
         "comment_start_string": "<#",
         "comment_end_string": "#>",
     },
+    ".qmd": {
+        "comment_start_string": "{{#",
+        "comment_end_string": "#}}",
+    }
 }
 
 
@@ -109,7 +114,7 @@ def materialize(source_root: Path, outdir: Path, context):
         copy_or_render(src, dst, context)
 
 
-def render_template(spec: dict):
+def render_template(spec: dict, release: str):
     template_id = spec["id"]
     blocks = spec.get("blocks", [])
 
@@ -123,6 +128,7 @@ def render_template(spec: dict):
         "language": spec["language"],
         "setup": spec["setup"],
         "run": spec["run"],
+        "release": release,
         "atoms": load_atoms(),
     }
 
@@ -197,10 +203,15 @@ def load_atoms():
 
 
 def main():
-    templates = load_manifest()
+    manifest_data = load_manifest()
+    try:
+        manifest = Manifest(**manifest_data)
+    except Exception as e:
+        print(f"✗ Invalid manifest: {e}")
+        exit(1)
 
-    for spec in templates:
-        render_template(spec)
+    for spec in manifest.templates:
+        render_template(spec.model_dump(), manifest.release)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+      
+      - name: Generate templates
+        run: python generator/generator.py
+      
+      - name: Run tests
+        run: python generator/test.py
+      
+      - name: Upload test results and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            logs/
+            out/*/out/
+          retention-days: 30
+          if-no-files-found: ignore
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Generate templates
+        run: python generator/generator.py
+      
+      - name: Configure SSH for deployment
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+      
+      - name: Configure git
+        run: |
+          git config --global user.name "recap-org-bot"
+          git config --global user.email "recap-org-bot@users.noreply.github.com"
+      
+      - name: Deploy templates
+        run: python generator/deploy.py

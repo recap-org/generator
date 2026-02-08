@@ -1,5 +1,5 @@
 ```{r}
-#| label: data-cleaning
+#| label: tbl-data-cleaning
 #| tbl-cap: Data summary
 
 # Data transformation: convert percentages to proportions

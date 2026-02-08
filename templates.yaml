@@ -1,40 +1,45 @@
-- id: r-small
-  size: small
-  language: r
-  setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary'))"
-  run: quarto render ./src/main.qmd
-  blocks: 
-    - devcontainer
-    - data/small
-    - assets/small
-    - src/r-small
-    - readme
-- id: r-medium
-  size: medium
-  language: r
-  setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
-  run: make
-  blocks: 
-    - devcontainer
-    - data/medium-large
-    - assets/medium-large
-    - quarto
-    - src/r-medium
-    - tests/r
-    - make
-    - readme
-- id: r-large
-  size: large
-  language: r
-  setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
-  run: make
-  blocks: 
-    - devcontainer
-    - data/medium-large
-    - assets/medium-large
-    - tex
-    - quarto
-    - src/r-large
-    - tests/r
-    - make
-    - readme
+release: 2026-q1
+templates: 
+  - id: r-small
+    size: small
+    language: r
+    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary'))"
+    run: quarto render ./src/main.qmd
+    blocks: 
+      - devcontainer
+      - data/small
+      - assets/small-medium
+      - quarto
+      - src/r-small
+      - readme
+  - id: r-medium
+    size: medium
+    language: r
+    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
+    run: make
+    test: make tests
+    blocks: 
+      - devcontainer
+      - data/medium-large
+      - assets/small-medium
+      - quarto
+      - src/r-medium
+      - tests/r/medium
+      - make
+      - readme
+  - id: r-large
+    size: large
+    language: r
+    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
+    run: make
+    test: make tests
+    blocks: 
+      - devcontainer
+      - data/medium-large
+      - assets/large
+      - tex
+      - quarto
+      - src/r-large
+      - tests/r/large
+      - make
+      - readme

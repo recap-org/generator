@@ -23,6 +23,10 @@ JINJA_ENV_OVERRIDES = {
         "comment_start_string": "<#",
         "comment_end_string": "#>",
     },
+    ".qmd": {
+        "comment_start_string": "{{#",
+        "comment_end_string": "#}}",
+    }
 }
 
 

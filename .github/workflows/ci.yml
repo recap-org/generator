@@ -38,6 +38,9 @@ jobs:
 
       - name: Run post-generation hooks
         run: python generator/post_hooks.py
+
+      - name: Fix out/ ownership for tests
+        run: sudo chown -R $USER:$USER out
       
       - name: Run tests
         run: python generator/test.py
@@ -77,6 +80,9 @@ jobs:
       
       - name: Run post-generation hooks
         run: python generator/post_hooks.py
+        
+      - name: Fix out/ ownership for tests
+        run: sudo chown -R $USER:$USER out
       
       - name: Configure SSH for deployment
         env:

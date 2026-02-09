@@ -32,6 +32,9 @@ jobs:
       
       - name: Generate templates
         run: python generator/generator.py
+      
+      - name: Make out/ writable for containers
+        run: chmod -R a+rwX out
 
       - name: Run post-generation hooks
         run: python generator/post_hooks.py
@@ -68,6 +71,9 @@ jobs:
       
       - name: Generate templates
         run: python generator/generator.py
+
+      - name: Make out/ writable for containers
+        run: chmod -R a+rwX out
       
       - name: Run post-generation hooks
         run: python generator/post_hooks.py

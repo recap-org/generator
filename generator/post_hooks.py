@@ -6,6 +6,7 @@ in Docker containers for templates that specify a 'post' field.
 """
 
 from pathlib import Path
+import os
 import subprocess
 import yaml
 import sys
@@ -54,9 +55,15 @@ def run_post_hook(template_id: str, language: str, release: str, post_command: s
         # Mount template directory
         "-v", f"{template_dir.absolute()}:/workspace",
         "-w", "/workspace",  # Set working directory
+    ]
+
+    if hasattr(os, "getuid") and hasattr(os, "getgid"):
+        docker_cmd.extend(["--user", f"{os.getuid()}:{os.getgid()}"])
+
+    docker_cmd.extend([
         image,
         "sh", "-c", post_command  # Execute the post command
-    ]
+    ])
 
     print(f"→ Running post-build hook for {template_id}")
     print(f"  Image: {image}")

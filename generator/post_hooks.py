@@ -13,6 +13,7 @@ import sys
 
 from models import Manifest
 
+
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "templates.yaml"
 OUT = ROOT / "out"

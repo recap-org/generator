@@ -54,12 +54,11 @@ def run_post_hook(template_id: str, language: str, release: str, post_command: s
         "--rm",  # Remove container after execution
         # Mount template directory
         "-v", f"{template_dir.absolute()}:/workspace",
-        "-w", "/home/ubuntu/workspace",  # Set working directory
-        "--user", "1000:1000"
+        "-w", "/workspace",
+        "--user", "0:0",
     ]
 
     # if hasattr(os, "getuid") and hasattr(os, "getgid"):
-    #     docker_cmd.extend(["--user", f"{os.getuid()}:{os.getgid()}"])
 
     docker_cmd.extend([
         image,

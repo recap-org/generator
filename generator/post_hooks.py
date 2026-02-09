@@ -54,7 +54,7 @@ def run_post_hook(template_id: str, language: str, release: str, post_command: s
         "--rm",  # Remove container after execution
         # Mount template directory
         "-v", f"{template_dir.absolute()}:/workspace",
-        "-w", "/workspace",  # Set working directory
+        "-w", "/home/ubuntu/workspace",  # Set working directory
         "--user", "1000:1000"
     ]
 

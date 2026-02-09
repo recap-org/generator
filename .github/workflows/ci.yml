@@ -32,6 +32,9 @@ jobs:
       
       - name: Generate templates
         run: python generator/generator.py
+
+      - name: Run post-generation hooks
+        run: python generator/post_hooks.py
       
       - name: Run tests
         run: python generator/test.py
@@ -65,6 +68,9 @@ jobs:
       
       - name: Generate templates
         run: python generator/generator.py
+      
+      - name: Run post-generation hooks
+        run: python generator/post_hooks.py
       
       - name: Configure SSH for deployment
         env:

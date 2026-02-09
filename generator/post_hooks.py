@@ -55,7 +55,7 @@ def run_post_hook(template_id: str, language: str, release: str, post_command: s
         # Mount template directory
         "-v", f"{template_dir.absolute()}:/workspace",
         "-w", "/workspace",  # Set working directory
-        "--user", "1000:1000"
+        "--user", "ubuntu"  # Run as non-root user for better compatibility
     ]
 
     if hasattr(os, "getuid") and hasattr(os, "getgid"):

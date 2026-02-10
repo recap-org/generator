@@ -62,18 +62,21 @@ def test_template(template_id, setup_cmd, run_cmd, test_cmd=None):
         print(f"  See log: {log_file}")
         return False
 
-    # Step 2: Run setup command
-    print(f"→ Running setup command: {setup_cmd}")
-    exit_code = run_command(
-        ["devcontainer", "exec", "--workspace-folder", str(template_dir),
-         "bash", "-c", setup_cmd],
-        log_file
-    )
+    # Step 2: Run setup command (if specified)
+    if setup_cmd:
+        print(f"→ Running setup command: {setup_cmd}")
+        exit_code = run_command(
+            ["devcontainer", "exec", "--workspace-folder", str(template_dir),
+             "bash", "-c", setup_cmd],
+            log_file
+        )
 
-    if exit_code != 0:
-        print(f"✗ Setup command failed for {template_id}")
-        print(f"  See log: {log_file}")
-        return False
+        if exit_code != 0:
+            print(f"✗ Setup command failed for {template_id}")
+            print(f"  See log: {log_file}")
+            return False
+    else:
+        print(f"→ No setup command specified, skipping...")
 
     # Step 3: Run the main command
     print(f"→ Running main command: {run_cmd}")

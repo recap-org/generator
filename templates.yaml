@@ -30,9 +30,9 @@ templates:
   - id: r-large
     size: large
     language: r
-    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
     run: make
     test: make tests
+    post: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))" && Rscript -e "renv::init()" && rm -rf ./renv/library ./renv/staging
     blocks: 
       - devcontainer
       - data/medium-large
@@ -43,3 +43,4 @@ templates:
       - tests/r/large
       - make
       - readme
+      - r-dev

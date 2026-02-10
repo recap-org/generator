@@ -20,6 +20,7 @@ Defines **which templates exist** and which building blocks they use.
   setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
   run: make
   test: make tests
+  post: Rscript -e "renv::init()" && rm -rf ./renv/library  # optional
   blocks: 
     - devcontainer
     - readme
@@ -96,6 +97,32 @@ This will:
 4. write rendered templates to the `out/` directory
 
 The build is deterministic and idempotent.
+
+### Post-build hooks
+
+After generating templates, you can run post-build hooks for templates that require additional setup:
+
+```bash
+python generator/post_hooks.py
+```
+
+This will:
+1. find templates with a `post` field in the manifest
+2. mount each template directory in a Docker container using `{language}-{release}` image
+3. execute the post-build command inside the container
+4. report success/failure for each hook
+
+Post-build hooks are useful for:
+- initializing package managers (e.g., `renv::init()` for R)
+- running setup scripts that require the full environment
+- cleaning up generated artifacts
+
+Example manifest entry with post-build hook:
+```yaml
+- id: r-large
+  language: r
+  post: Rscript -e "renv::init()" && rm -rf ./renv/library
+```
 
 ### Testing templates
 

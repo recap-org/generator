@@ -17,12 +17,15 @@ class TemplateSpec(BaseModel):
                       description="Template size (small, medium, large)")
     language: str = Field(..., min_length=1,
                           description="Programming language (r, python, etc.)")
-    setup: str = Field(..., min_length=1, description="Setup command to run")
+    setup: Optional[str] = Field(
+        None, description="Optional setup command to run")
     run: str = Field(..., min_length=1, description="Main command to run")
     blocks: List[str] = Field(..., min_length=1,
                               description="List of blocks to compose")
     test: Optional[str] = Field(
         None, description="Optional test command to run")
+    post: Optional[str] = Field(
+        None, description="Optional post-build command to run in container")
 
     @model_validator(mode="after")
     def validate_blocks(self) -> "TemplateSpec":

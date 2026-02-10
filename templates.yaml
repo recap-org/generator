@@ -43,4 +43,4 @@ templates:
       - tests/r/large
       - make
       - readme
-      - vscode
+      - r-dev

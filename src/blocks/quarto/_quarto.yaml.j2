@@ -19,18 +19,38 @@ author: "{{ atoms.author.first_name }} {{ atoms.author.last_name }}"
 bibliography: assets/references.bib
 
 #### rendering options ---------------------------
-## by default, we render qmd as pdf
-## comment out pdf and uncomment:
-## - html to render as html instead
-## - gfm to render as GitHub markdown (useful for viewing on GitHub)
+## we have configured sane defaults for 3 formats: 
+# pdf, html, gfm (Github markdown, for pretty rendering on GitHub)
+{% if size == 'small' %}
+## by default, we render Quarto documents as pdf
+{% else %}
+## by default, we render Quarto documents as html
+{% endif %}
+## to use another format, comment out the formats you don't want 
+## and uncomment the format you want to use
 
 ## options that apply to all formats
 fig-width: 6.2 # makes figures full-width in A4 page with 1in margins
 lof: true # include a list of figures
 lot: true # include a list of tables
 number-sections: true # all sections are numbered
+{% if size == 'small' %}
 format:
-    # pdf-specific options
+    html:
+        # ensures that html files are self-contained
+        # this means you can share just the .html file and it will render properly
+        # see https://quarto.org/docs/output-formats/html-basics.html#self-contained
+        embed-resources: true
+    # pdf:
+        # set the document margins to 1in
+        # geometry:
+            # - top=1in
+            # - bottom=1in
+            # - left=1in
+            # - right=1in
+    # gfm: default # Github-flavored Markdown
+{% else %}
+format:
     pdf:
         # set the document margins to 1in
         geometry:
@@ -39,11 +59,12 @@ format:
             - left=1in
             - right=1in
     # html:
-        ## make sure html files are self-contained
+        ## ensures that html files are self-contained
         ## this means you can share just the .html file and it will render properly
         ## see https://quarto.org/docs/output-formats/html-basics.html#self-contained
         # embed-resources: true
     # gfm: default
+{% endif %}
 
 knitr:
     opts_chunk:

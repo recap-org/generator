@@ -16,13 +16,13 @@ To get started, click the **Use this template** button above the file list ⬆�
 
 You have two options: 
 
-### Try it out online
+### Try it out online (without saving your work)
 
 1. Select **Open in a codespace**. 
 2. Wait for the codespace to be created and started. **This may take up to 5 minutes.** ☕
 3. Once the codespace is ready, you can follow the instructions in the **Basic demo** section below.
 
-### Make your own copy
+### Make your own copy (to save your work)
 
 If you want to keep working on this project (locally or in the cloud), create your own copy of the template.
 
@@ -53,7 +53,7 @@ If you are running this template on GitHub Codespaces or in an isolated environm
 {% endif %}
 
 {% if size == 'small' %}
-Open `./src/main.qmd` and hit the Preview button (top right corner) or press `Cmd + Shift + K` to render the report. You will find a PDF report with some basic data analysis and a photo in `./out/src/main.pdf`.
+Open `./src/main.qmd` and hit the Preview button (top right corner) or press `Cmd + Shift + K` to render the report. You will find an HTML report with some basic data analysis and a photo in `./out/src/main.html`.
 {% elif size == 'medium' %}
 Then, open a terminal and type: 
 
@@ -243,11 +243,20 @@ Helper functions are shared across your data and analysis code. They are declare
 {% if size == 'large' %}
 ### Dependency management
 
-We use `renv` to record the R packages used by the project. It is enabled by default, as we believe it is a good practice for large projects. Check the package's [documentation](https://rstudio.github.io/renv/) for further information. To permanently remove renv, do the following: 
+This template uses explicit dependency management for R packages.
 
-- Remove `./renv.lock`, `./renv`, and `./.Rprofile`
-- In `.devcontainer/devcontainer.json`, comment out the line `"postCreateCommand": "Rscript -e 'renv::restore()'"` to disable automatic installation of renv packages.  
+If you are not familiar with dependency management in RECAP, we recommend first reading our [documentation on dependency management](https://recap-org.github.io/docs/dependency-management)
 
+We use the `renv` package to record the exact R package versions required by the project. This is enabled by default, as it is good practice for long-running, complex research projects. For detailed documentation on `renv`, see its [documentation](https://rstudio.github.io/renv/)
+
+If you prefer not to use explicit dependency management, you can remove it as follows:
+
+- Delete `./renv.lock`, `./renv`, and `./.Rprofile`.
+- In `.devcontainer/devcontainer.json`, comment out the line:
+
+  `"postCreateCommand": "Rscript -e 'renv::restore()'"`
+
+  This disables automatic restoration of R package versions when the container is created.
 {% endif %}
 ### Configuration
 

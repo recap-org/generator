@@ -3,6 +3,7 @@
 
 import subprocess
 import sys
+import os
 import yaml
 import shutil
 import tempfile
@@ -55,8 +56,12 @@ def sync_directory(src, dst):
 
     # Copy all files from src to dst
     for item in src.iterdir():
-        if item.is_dir():
-            shutil.copytree(item, dst / item.name)
+        if item.is_symlink():
+            # Preserve symlinks (including their targets)
+            link_target = os.readlink(item)
+            os.symlink(link_target, dst / item.name)
+        elif item.is_dir():
+            shutil.copytree(item, dst / item.name, symlinks=True)
         else:
             shutil.copy2(item, dst / item.name)
 

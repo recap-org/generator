@@ -14,33 +14,57 @@ ANALYSIS = $(patsubst ./src/analysis/%.qmd, ./out/src/analysis/%.pdf, $(wildcard
 # LaTex targets
 PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
 
+{% elif language == 'stata' %}
+# Stata targets
+LIBS = $(wildcard ./src/lib/*.do)
+	{% if size == 'large' %}
+DATA = $(patsubst ./src/data/%.do, ./out/src/data/%.log, $(wildcard ./src/data/*.do))
+ANALYSIS = $(patsubst ./src/analysis/%.do, ./out/src/analysis/%.log, $(wildcard ./src/analysis/*.do))
+	{% endif %}
+
+{% endif %}
+{% if size == 'large' %}
+# LaTex targets
+PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
+
 {% endif%}
 # Main targets
-{% if language == 'r' and size == 'medium' %}
+{% if language == 'r' %}
+	{% if size == 'medium' %}
 all: ./out/src/main.pdf
 .PHONY: all fresh clear-cache tests
-{% endif %}
-{% if language == 'r' and size == 'large' %}
+	{% elif size == 'large' %}
 all: $(PDF_FILES)
 .SECONDARY: $(ANALYSIS) $(DATA)
 .PHONY: all fresh clear-cache tests symlinks 
+	{% endif %}
+{% endif %}
+{% if language == 'stata' %}
+	{% if size == 'medium' or size == 'small' %}
+all: ./out/text/article.pdf
+.PHONY: all fresh clear-cache tests
+	{% elif size == 'large' %}
+all: $(PDF_FILES)
+.SECONDARY: $(ANALYSIS) $(DATA)
+.PHONY: all fresh clear-cache tests symlinks 
+	{% endif %}
 {% endif %}
 
 
 # ---- Build rules ----
 
-{% if language == 'r' and size == 'medium' %}
+{% if language == 'r' %}
+	{% if size == 'medium' %}
 # Step 1: Data
-./out/src/data.pdf: ./src/data.qmd $(R_LIBS)
+./out/src/data.pdf: ./src/data.qmd $(LIBS)
 	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
 	@$(call build_qmd,$<)
 
 # Step 2: Analysis
-./out/src/main.pdf: ./src/main.qmd ./out/src/data.pdf $(R_LIBS)
+./out/src/main.pdf: ./src/main.qmd ./out/src/data.pdf $(LIBS)
 	@echo "📊 $(GREEN_START)Running analysis$(GREEN_END)"
 	@$(call build_qmd,$<)
-{% endif %}
-{% if language == 'r' and size == 'large' %}
+	{% elif size == 'large' %}
 # Step 1: Data
 ./out/src/data/%.pdf: ./src/data/%.qmd $(LIBS)
 	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
@@ -54,11 +78,51 @@ all: $(PDF_FILES)
 # Step 3: Paper
 ./out/tex/%.pdf: ./tex/%/main.tex $(ANALYSIS)
 	@$(call build_tex,$<)
+	{% endif %}
+{% endif %}
+{% if language == 'stata' %}
+	{% if size == 'small' %}
+# Step 1: Analysis
+./out/src/main.log: ./src/main.do $(LIBS)
+	@$(call build_do,$<)
+
+# Step 2: Paper
+./out/tex/article.pdf: ./tex/article/main.tex ./out/src/main.log
+	@$(call build_tex,$<)
+	{% if size == 'medium' %}
+# Step 1: Data
+./out/src/data.log: ./src/data.do $(LIBS)
+	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
+	@$(call build_do,$<)
+
+# Step 2: Analysis
+./out/src/main.log: ./src/main.do ./out/src/data.log $(LIBS)
+	@echo "📊 $(GREEN_START)Running analysis$(GREEN_END)"
+	@$(call build_do,$<)
+
+# Step 3: Paper
+./out/tex/article.pdf: ./tex/article/main.tex ./out/src/main.log
+	@$(call build_tex,$<)
+	{% elif size == 'large' %}
+# Step 1: Data
+./out/src/data/%.log: ./src/data/%.do $(LIBS)
+	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
+	@$(call build_do,$<)
+
+# Step 2: Analysis
+./out/src/analysis/%.log: ./src/analysis/%.do $(DATA) $(LIBS)
+	@echo "📊 $(GREEN_START)Running analysis$(GREEN_END)"
+	@$(call build_do,$<)
+
+# Step 3: Paper
+./out/tex/%.pdf: ./tex/%/main.tex $(ANALYSIS)
+	@$(call build_tex,$<)
+	{% endif %}
 {% endif %}
 
 # ---- Utility targets ----
 
-{% if size == 'large' %}
+{% if size == 'large' or language=='stata' %}
 clean: ## Clean up intermediate latex files
 	@echo "🧹 $(GREEN_START)Cleaning up...$(GREEN_END)"
 	@find ./tex -type f ! -name '*.tex' -delete
@@ -68,6 +132,7 @@ clean: ## Clean up intermediate latex files
 fresh: ## Delete all targets
 	@echo "😵 $(GREEN_START)Deleting all targets and intermediary files...$(GREEN_END)"
 	@find ./out -type f -name "*.pdf" -delete
+	@find ./out -type f -name "*.log" -delete
 	@find ./assets/tables -type f ! -name ".gitignore" -delete
 	@find ./assets/figures -type f ! -name ".gitignore" -delete
 	@find ./data/processed -type f ! -name ".gitignore" -delete
@@ -84,9 +149,23 @@ tests: ## Run tests
 	@echo "🧪 $(GREEN_START)Running tests...$(GREEN_END)"
 	{% if language=='r' %}
 	@Rscript -e "testthat::test_dir('tests')"
+	{% elif language=='stata' %}
+	@for test in ./tests/*.do; do \
+		echo "Running $$test..."; \
+		stata-mp -b "$$test"; \
+		if tail -2 "$$(basename $$test .do).log" | grep -q "r([0-9]\+);"; then \
+			echo "$(RED_START)❌ Test failed: $$test$(RED_END)"; \
+			tail -10 "$$(basename $$test .do).log"; \
+			exit 1; \
+		else \
+			echo "$(GREEN_START)✓ $$test passed$(GREEN_END)"; \
+			rm "$$(basename $$test .do).log"; \
+		fi; \
+	done
+	@echo "✅ $(GREEN_START)All tests passed!$(GREEN_END)"
 	{% endif %}
 
-{% if size =='large' %}
+{% if size =='large' or language == 'stata' %}
 symlinks: ## Create symlinks to assets in each LaTeX subdirectory
 	@echo "🛠️ $(GREEN_START)Creating symlinks to assets folder...$(GREEN_END)"
 	@for dir in ./tex/*/; do \
@@ -129,7 +208,33 @@ define build_R
 endef
 
 {% endif %}
-{% if size == 'large' %}
+{% if language == 'stata' %}
+# build_do
+# -----------
+# Runs a Stata do file and moves the log output to ./out directory
+# Checks for errors in the log file and fails the build if errors are found
+# Arguments:
+#   $1 - Path to the .do file (e.g., ./src/data/data.do)
+define build_do
+	$(eval BASENAME := $(notdir $(basename $(1))))
+	$(eval TARGET := $(patsubst %.do,out/%.log,$(1)))
+	@echo " $(GREEN_START)📄 Running $(1) -> $(TARGET)...$(GREEN_END)"
+	@mkdir -p $(dir $(TARGET))
+	@stata-mp -b $(1)
+	@if tail -2 $(BASENAME).log | grep -q "r([0-9]\+);"; then \
+		echo "$(RED_START)❌ Error in $(1)$(RED_END)"; \
+		echo "$(RED_START)Last 10 lines of log:$(RED_END)"; \
+		tail -10 $(BASENAME).log; \
+		echo "$(RED_START)See $(BASENAME).log for more details$(RED_END)"; \
+		exit 1; \
+	else \
+		mv $(BASENAME).log $(TARGET); \
+		echo "✅ $(GREEN_START)Done!$(GREEN_END)"; \
+	fi
+endef
+
+{% endif %}
+{% if size == 'large' or language == 'stata' %}
 # build_tex
 # -----------
 # Compiles a LaTeX file in ./tex/DIR/main.tex and copies the resulting PDF to ./out/tex/DIR.pdf
@@ -149,4 +254,7 @@ endef
 {% endif %}
 # --- I/O colors ---
 GREEN_START = \033[1;32m
-GREEN_END = \033[0m
+GREEN_END = \033[
+RED_START = \033[1;31m
+RED_END = \033[0m
+

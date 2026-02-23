@@ -1,18 +1,16 @@
 export
 
-# ---- Define important paths ----
+# ---- Define targets ----
 {% if language == 'r' %}
 # R targets
 LIBS = $(wildcard ./src/lib/*.R)
 	{% if size == 'large' %}
 DATA = $(patsubst ./src/data/%.qmd, ./out/src/data/%.pdf, $(wildcard ./src/data/*.qmd))
 ANALYSIS = $(patsubst ./src/analysis/%.qmd, ./out/src/analysis/%.pdf, $(wildcard ./src/analysis/*.qmd))
-	{% endif %}
 
-{% endif %}
-{% if size == 'large' %}
 # LaTex targets
 PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
+	{% endif %}
 
 {% elif language == 'stata' %}
 # Stata targets
@@ -20,14 +18,12 @@ LIBS = $(wildcard ./src/lib/*.do)
 	{% if size == 'large' %}
 DATA = $(patsubst ./src/data/%.do, ./out/src/data/%.log, $(wildcard ./src/data/*.do))
 ANALYSIS = $(patsubst ./src/analysis/%.do, ./out/src/analysis/%.log, $(wildcard ./src/analysis/*.do))
+
+# LaTex targets
+PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
 	{% endif %}
 
 {% endif %}
-{% if size == 'large' %}
-# LaTex targets
-PDF_FILES = $(patsubst ./tex/%,./out/tex/%.pdf,$(wildcard ./tex/*)) 
-
-{% endif%}
 # Main targets
 {% if language == 'r' %}
 	{% if size == 'medium' %}
@@ -41,7 +37,7 @@ all: $(PDF_FILES)
 {% endif %}
 {% if language == 'stata' %}
 	{% if size == 'medium' or size == 'small' %}
-all: ./out/text/article.pdf
+all: ./out/tex/article.pdf
 .PHONY: all fresh clear-cache tests
 	{% elif size == 'large' %}
 all: $(PDF_FILES)

@@ -1,0 +1,20 @@
+/* ==============================================================================
+   Analysis
+   
+   This script:
+   - Loads processed data
+   - Estimates regression models
+   - Creates tables and figures for use in LaTeX
+============================================================================== */
+
+// Setup
+clear all
+set more off
+
+// Load helper functions
+do "src/lib/io.do"
+
+// Load processed data
+import delimited "data/processed/data.csv", clear
+
+{{ atoms.stata_analysis }}

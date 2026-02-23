@@ -89,7 +89,7 @@ all: $(PDF_FILES)
 # Step 2: Paper
 ./out/tex/article.pdf: ./tex/article/main.tex ./out/src/main.log
 	@$(call build_tex,$<)
-	{% if size == 'medium' %}
+	{% elif size == 'medium' %}
 # Step 1: Data
 ./out/src/data.log: ./src/data.do $(LIBS)
 	@echo "🗄️ $(GREEN_START)Data processing$(GREEN_END)"
@@ -169,6 +169,7 @@ tests: ## Run tests
 symlinks: ## Create symlinks to assets in each LaTeX subdirectory
 	@echo "🛠️ $(GREEN_START)Creating symlinks to assets folder...$(GREEN_END)"
 	@for dir in ./tex/*/; do \
+		dir=$${dir%/}; \
 		if [ -d "$$dir" ]; then \
 			echo "Creating symlinks in $$dir..."; \
 			ln -sf "../../assets" "$$dir/assets"; \
@@ -257,4 +258,3 @@ GREEN_START = \033[1;32m
 GREEN_END = \033[
 RED_START = \033[1;31m
 RED_END = \033[0m
-

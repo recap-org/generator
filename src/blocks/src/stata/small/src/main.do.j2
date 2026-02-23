@@ -1,0 +1,30 @@
+/* ==============================================================================
+   Analysis
+   
+   This script:
+   - Cleans raw data into processed data
+   - Estimates regression models
+   - Creates tables and figures for use in LaTeX
+============================================================================== */
+
+// Setup
+clear all
+set more off
+
+// Load helper functions
+do "src/lib/io.do"
+
+/* ==============================================================================
+   Data cleaning
+============================================================================== */
+
+{{ atoms.stata_data }}
+
+// Display confirmation message
+display "Data cleaning complete. Processed data saved to data/processed/data.csv"
+
+/* ==============================================================================
+   Analysis
+============================================================================== */
+
+{{ atoms.stata_analysis }}

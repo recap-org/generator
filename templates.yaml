@@ -10,7 +10,7 @@ templates:
       - data/small
       - assets/small-medium
       - quarto
-      - src/r-small
+      - src/r/small
       - readme
   - id: r-medium
     size: medium
@@ -23,7 +23,7 @@ templates:
       - data/medium-large
       - assets/small-medium
       - quarto
-      - src/r-medium
+      - src/r/medium
       - tests/r/medium
       - make
       - readme
@@ -39,41 +39,44 @@ templates:
       - assets/large
       - tex
       - quarto
-      - src/r-large
+      - src/r/large
       - tests/r/large
       - make
       - readme
-      - r-dev
+      - dev/r
   - id: stata-small
     size: small
     language: stata
-    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary'))"
+    setup: stata-mp -b requirements.do
     run: make
     blocks:
       - devcontainer
       - data/medium-large
       - assets/large
-      - src/r-small
+      - src/stata/small
       - make
+      - tex
       - readme
+      - dev/stata
   - id: stata-medium
     size: medium
     language: stata
-    setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
+    setup: stata-mp -b requirements.do
     run: make
     test: make tests
     blocks:
       - devcontainer
       - data/medium-large
       - assets/small-medium
-      - quarto
-      - src/r-medium
-      - tests/r/medium
+      - src/stata/medium
+      - tests/stata
       - make
       - readme
+      - dev/stata
   - id: stata-large
     size: large
     language: stata
+    setup: stata-mp -b requirements.do
     run: make
     test: make tests
     blocks:
@@ -81,9 +84,8 @@ templates:
       - data/medium-large
       - assets/large
       - tex
-      - quarto
-      - src/r-large
-      - tests/r/large
+      - src/stata/large
+      - tests/stata
       - make
       - readme
-      - r-dev
+      - dev/stata

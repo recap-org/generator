@@ -1,0 +1,1 @@
+{{ atoms.stata_lib }}

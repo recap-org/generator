@@ -14,6 +14,12 @@
 Thumbs.db
 ehthumbs.db
 
+{% if language == 'stata' %}
+#### Stata ####
+
+*.log
+
+{% endif %}
 {% if language == 'r' %}
 #### R ####
 
@@ -73,7 +79,7 @@ rsconnect/
 **/*.quarto_ipynb
 
 {% endif %}
-{% if size == 'large' %}
+{% if size == 'large' or language == 'stata' %}
 #### LaTeX ####
 
 ## Core latex/pdflatex auxiliary files:

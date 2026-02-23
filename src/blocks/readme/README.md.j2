@@ -33,16 +33,30 @@ The RECAP documentation explains:
 
 ➡️ See **[How to run a RECAP template](https://recap-org.github.io/docs/running-templates/)** on the RECAP website.
 
+{% if language == 'stata' %}
+## Using Stata in Codespaces and in isolated environments
+
+When using Stata in Codespaces or in an isolated environment, you need to provide a valid Stata licence. Open the file `./stata.lic` and enter your license information there.
+
+To open the Stata graphical interface, open a Terminal and run
+
+```bash 
+stata-gui
+```
+
+Then, click on the provided link to open Stata in your browser.
+
+{% endif %}
 ## Demo
 
 {% if language == 'r' %}
-{% if setup is not none %}
+  {% if setup is not none %}
 First, install the R packages used in this template. Open a terminal and type:
 
 ```bash
 {{ setup }}
 ```
-{% else %}
+  {% else %}
 We use [renv](https://rstudio.github.io/renv/) to record the R packages used in the project. If you are running this template locally, make sure the `renv` package is installed and use it to restore the packages associated with the template. Open a terminal and type: 
 
 ```bash
@@ -50,11 +64,11 @@ Rscript -e "renv::restore()"
 ```
 
 If you are running this template on GitHub Codespaces or in an isolated environment (Docker), you can skip this step; it was executed automatically as the environment was being put together. 
-{% endif %}
+  {% endif %}
 
-{% if size == 'small' %}
+  {% if size == 'small' %}
 Open `./src/main.qmd` and hit the Preview button (top right corner) or press `Cmd + Shift + K` to render the report. You will find an HTML report with some basic data analysis and a photo in `./out/src/main.html`.
-{% elif size == 'medium' %}
+  {% elif size == 'medium' %}
 Then, open a terminal and type: 
 
 ```bash
@@ -62,7 +76,7 @@ Then, open a terminal and type:
 ```
 
 This will execute the data cleaning step in `./src/data.qmd`, then render the report in `./src/main.qmd`. You will find a PDF report with some basic data analysis and a photo in `./out/src/main.pdf`.
-{% elif size == 'large' %}
+  {% elif size == 'large' %}
 Then, open a terminal and type: 
 
 ```bash
@@ -70,7 +84,29 @@ Then, open a terminal and type:
 ```
 
 This will execute the data cleaning step by running all the files `./src/data`, then the analysis by running all the files in `./src/analysis`, the compile the tex files in `./tex`. You will find the final documents (an article, its appendix, and a presentation) in the `./out/tex` directory and intermediary reports of the data cleaning and analysis steps in the `./out/src` directory.
-{% endif %}
+  {% endif %}
+{% elif language == 'stata' %}
+First, install the packages used in this template. Open a terminal and type:
+
+```bash
+{{ setup }}
+```
+
+Alternatively, you can open Stata and run `./requirements.do`
+
+Then, open a terminal and type: 
+
+```bash
+{{ run }}
+```
+
+  {% if size == 'small' %}
+This will execute the analysis in `./src/main.do`, then render the TeX file in `./tex/article`. You will find the rendered PDF in `./out/article.df` and an intermediary report of the analysis in the `./out/src` directory.
+  {% elif size == 'medium' %}
+This will execute the data cleaning step in `./src/data.do`, then the analysis step in `./src/main.do`, and finally render the TeX file in `./tex/article`. You will find the rendered PDF in `./out/article.df` and intermediary reports of the data cleaning and analysis steps in the `./out/src` directory.
+  {% elif size == 'large' %}
+This will execute the data cleaning step by running all the files `./src/data`, then the analysis by running all the files in `./src/analysis`, the compile the tex files in `./tex`. You will find the final documents (an article, its appendix, and a presentation) in the `./out/tex` directory and intermediary reports of the data cleaning and analysis steps in the `./out/src` directory.
+  {% endif %}
 {% endif %}
 
 ## Using this template
@@ -81,7 +117,7 @@ This template is organized as follows
 ├── LICENSE # license file
 ├── README.md # this file
 ├── assets
-{% if size == 'medium' or size == 'large' %}
+{% if size == 'medium' or size == 'large' or language == 'stata' %}
 │   ├── figures # where generated figures go (not committed to git)
 │   ├── tables # where generated tables go (not committed to git)
 {% endif %}
@@ -96,38 +132,47 @@ This template is organized as follows
 {% endif %}
 ├── src # all the code goes here
 {% if size == 'small' %}
+  {% if language == 'r' %}
 │   ├── main.qmd # generate the final report
+  {% elif language == 'stata' %}
+│   ├── main.do # generate the final report
+  {% endif %}
 {% elif size == 'medium' %}
+  {% if language == 'r' %}
 │   ├── data.qmd # process raw data into clean data
 │   ├── main.qmd # generate the final report
+  {% elif language == 'stata' %}
+│   ├── data.do # process raw data into clean data
+│   ├── main.do # generate the final report
+  {% endif %}
 {% elif size == 'large' %}
 │   ├── data # scripts that process raw data into clean data
 │   ├── main # scripts that generate do the analysis
 {% endif %}
 │   └── lib # helper functions
-{% if size == 'small' %}
-├── out # where your generated report is stored (not committed to git)
-{% elif size == 'medium '%}
-├── out # where your generated report is stored (not committed to git)
-{% elif size == 'large '%}
 ├── out # where generated outputs are stored (not committed to git)
-{% endif %}
+{% if language == 'r' %}
 ├── _quarto.yaml # configuration for Quarto
 ├── .lintr # configuration for R linting
-{% if size == 'large' %}
+  {% if size == 'large' %}
 ├── renv.lock # renv lockfile; records packages used in the project
 ├── renv # renv data
 ├── .Rprofile # launches renv when opening an R session
 ├── _vscode.R # R packages required for a pleasant experience with VS Code
+  {% endif %}
+{% elif language == 'stata' %}
+├── requirements.do # records packages used in the project
+├── stata.lic # your Stata license information
 {% endif %}
 └── .devcontainer # configuration for the containerized environment
 ```
 
-{% if size == 'small'%}
+{% if language == 'r' %}
+  {% if size == 'small'%}
 ### Producing the report
 
 The file `./src/main.qmd` produces the final report. It generates an HTML file at `./out/src/main.html`.
-{% elif size == 'medium'%}
+  {% elif size == 'medium'%}
 ### Producing the report
 
 This template uses `make` to orchestrate the different steps of the analysis.  
@@ -174,7 +219,7 @@ make
 
 You can customize `./Makefile` to change how the build steps are executed.  
 For an overview of the design principles behind this setup, see the `make` documentation linked above.
-{% elif size == 'large' %}
+  {% elif size == 'large' %}
 ### Producing the paper, appendix and presentation
 
 This template uses `make` to orchestrate a multi-stage analysis pipeline.  
@@ -244,6 +289,143 @@ make symlinks
 This will automatically create the required symlinks.
 
 If symlink creation fails, make sure you are working inside the development container, where symlinks are fully supported.
+  {% endif %}
+{% elif language == 'stata' %}
+  {% if size == 'small' or size == 'medium'%}
+### Producing the report
+  {% elif size == 'large '%}
+### Producing the paper, appendix and presentation
+  {% endif %}
+
+This template uses `make` to orchestrate the different steps of the analysis.  
+If you are not familiar with `make`, we strongly recommend reading the following page first: [Building your project with make](https://recap-org.github.io/docs/building-with-make)
+
+What follows focuses on how this template is structured, not on how `make` works internally.
+
+  {% if size == 'small' %}
+#### Step 1: doing the analysis
+
+The file `./src/main.do` produces the tables and figures used in the report. These tables and figures are stored in `./assets/tables` and `./assets/figures`.
+
+#### Step 2: producing the report
+
+The file `./tex/article/main.tex` uses the tables and figures to produce the final report.  
+It generates a PDF at `./out/article.pdf`.
+
+### Running the full analysis
+
+To run the full analysis from scratch, use:
+
+```bash
+make
+```
+
+This command executes both steps in the correct order:
+1. run `./src/main.do`,
+2. compile `./out/article/main.tex`.
+
+Every RECAP template also provides a built-in way to discover available commands.  
+If you are unsure how to interact with the project, start by running:
+
+```bash
+make
+```
+  {% elif size == 'medium' %}
+#### Step 1: cleaning raw data
+
+Raw data should be placed in the `./data/raw` directory and committed to git (unless it is very large, in which case you should consider alternative storage solutions).
+
+The file `./src/data.do` turns raw data into clean, processed data.  
+The processed data is written to the `./data/processed` directory.
+
+#### Step 2: doing the analysis
+
+The file `./src/main.do` produces the tables and figures used in the report. These tables and figures are stored in `./assets/tables` and `./assets/figures`.
+
+### Running the full analysis
+
+To run the full analysis from scratch, use:
+
+```bash
+make
+```
+
+This command executes both steps in the correct order:
+1. run `./src/data.do`,
+2. run `./src/main.do`.
+3. compile `./out/article/main.tex`.
+
+Every RECAP template also provides a built-in way to discover available commands.  
+If you are unsure how to interact with the project, start by running:
+
+```bash
+make
+```
+
+You can customize `./Makefile` to change how the build steps are executed.  
+For an overview of the design principles behind this setup, see the `make` documentation linked above.
+  {% elif size == 'large' %}
+#### Running the full analysis
+
+To run the entire pipeline from scratch, use:
+
+```bash
+make
+```
+
+This command will:
+1. process the data (`./src/data`),
+2. run the analysis (`./src/analysis`),
+3. compile the LaTeX documents (`./tex`).
+
+Every RECAP large template also provides a `make help` command that lists the supported build targets and utility commands.  
+If you are unsure how the project is meant to be used, this is always the right starting point.
+
+You can customize the `./Makefile` to adapt the pipeline to your needs.  
+For a conceptual overview of how RECAP uses `make` at this scale, refer back to the documentation page linked above.
+
+The rest of this section explains how the large template is organized and how your code should fit into that structure.
+
+#### Step 1: cleaning raw data
+
+Raw data should be placed in the `./data/raw` directory and committed to git (unless it is very large, in which case you should consider alternative storage solutions).
+
+Data-cleaning code should consist of a series of `.do` files placed in the `./src/data` directory.  
+These scripts produce clean, analysis-ready datasets, stored in `./data/processed`.
+
+To leverage the automated build pipeline, each script should be able to run independently (that is, scripts should not depend on one another).
+
+#### Step 2: doing the analysis
+
+Analysis code should be placed in the `./src/analysis` directory as a series of `.do` files.
+
+These scripts:
+- take processed data from `./data/processed` as input,
+- produce tables and figures stored in `./assets/tables` and `./assets/figures`.
+
+As in the data step, analysis scripts should be written so they can run in parallel.
+
+#### Step 3: compiling the LaTeX documents
+
+Each LaTeX document lives in its own subdirectory of `./tex`.  
+The main file of each document must be called `main.tex`.
+
+LaTeX documents use symlinks to the shared `./assets` directory so that tables, figures, and bibliographic resources can be reused across documents. 
+
+A symlink is simply a reference to another folder. It does not duplicate files — it just points to them. This allows every LaTeX project to access the same assets without copying them.
+
+You normally do not need to manage these links manually.
+
+If you add a new LaTeX project (a new subdirectory under `./tex`), run:
+
+```bash
+make symlinks
+```
+
+This will automatically create the required symlinks.
+
+If symlink creation fails, make sure you are working inside the development container, where symlinks are fully supported.
+  {% endif %}
 {% endif %}
 
 ### External assets
@@ -252,12 +434,20 @@ A project may also use assets that are not generated by code (e.g., external ima
 
 ### Helper functions
 
+{% if language == 'r' %}
 Helper functions are shared across your data and analysis code. They are declared in `.R` files that are placed in `./src/lib`. Think of these helper functions as a quasi-R package that accompanies the project. As such, each of these functions should be properly documented so that all collaborators understand how they work.  
+{% elif language == 'stata'%}
+Helper functions are shared across your data and analysis code. They are declared in `.do` files that are placed in `./src/lib`. Think of these helper functions as a quasi independent package that accompanies the project. As such, each of these functions should be properly documented so that all collaborators understand how they work.  
+{% endif %}
 
 {% if size == 'medium' or size =='large'%}
 ### Tests
 
+{% if language == 'r' %}
 This template includes a basic testing setup using the `testthat` package.
+{% elif language == 'stata' %}
+This template includes a basic testing setup written using `.do` files.
+{% endif %}
 
 If you are not familiar with how testing works in RECAP, we recommend first reading our [documentation on tests](https://recap-org.github.io/docs/tests).
 
@@ -272,10 +462,14 @@ To run all tests, use:
 make tests
 ```
 
+{% if language == 'r' %}
 For details on writing tests, see the official `testthat` [documentation](https://testthat.r-lib.org/).
+{% elif language == 'stata' %}
+To write other tests, feel free to copy and modify the existing tests.
+{% endif %}
 
 {% endif %}
-{% if size == 'large' %}
+{% if language == 'r' and size == 'large' %}
 ### Dependency management
 
 This template uses explicit dependency management for R packages.
@@ -297,19 +491,21 @@ If you prefer not to use explicit dependency management, you can remove it as fo
   This disables automatic restoration of R package versions when the container is created.
 
 {% endif %}
+{% if language == 'r' %}
 ### Configuration
 
 Look into the following files to tweak things as you see fit: 
 
 - `./.lintr`: R linting options
 - `./_quarto.yaml`: Quarto options; we provide a set of sane defaults
-{% if size == 'medium' or size == 'large' %}
+  {% if size == 'medium' or size == 'large' %}
 - `./Makefile`: customize how build steps are executed
+  {% endif %}
 {% endif %}
 
 ## Software environment
 
-This template comes with a reproducible execution environment that includes R, Quarto,{% if size == 'medium' or size == 'large' %}LaTeX,{% endif %} and other useful tools. We rely on the [Dev Container](https://code.visualstudio.com/docs/devcontainers/containers) specification, which means that you can extend the environment by editting `./.devcontainer/devcontainer.json`.
+This template comes with a reproducible execution environment that includes {% if language == 'r' %}R, Quarto,{% if size == 'medium' or size == 'large' %}LaTeX,{% endif %}{% elif language == 'stata' %}Stata, LaTeX,{% endif %} and other useful tools. We rely on the [Dev Container](https://code.visualstudio.com/docs/devcontainers/containers) specification, which means that you can extend the environment by editting `./.devcontainer/devcontainer.json`.
 
 The exact software stack (including versions) is documented in the **[RECAP {{release}} image release](https://github.com/recap-org/images/releases/tag/{{release}})**.
 
@@ -328,3 +524,6 @@ We thank
 
 - [Jason Leung](https://unsplash.com/@ninjason?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/donkey-kong-arcade-game-screen-with-1981-date-c5tiCWrZADc?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) for that nice Donkey Kong photo.
 - [grandmaster07](https://www.kaggle.com/grandmaster07) for the student exam score dataset analysis published on [Kaggle](https://www.kaggle.com/datasets/grandmaster07/student-exam-score-dataset-analysis)
+{% if language == 'stata' %}
+- [AEADataEditor](https://github.com/AEADataEditor) for the [Stata image](https://hub.docker.com/r/dataeditors/stata19_5-mp-x) we use our containerized environment.
+{% endif %}

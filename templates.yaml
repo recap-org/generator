@@ -67,7 +67,7 @@ templates:
     blocks:
       - devcontainer
       - data/medium-large
-      - assets/small-medium
+      - assets/large
       - src/stata/medium
       - tests/stata
       - make

@@ -1,6 +1,3 @@
-// Load raw data
-import delimited "data/raw/data.csv", clear
-
 // Data transformation: convert percentages to proportions
 replace attendance_percent = attendance_percent / 100
 replace previous_scores = previous_scores / 100

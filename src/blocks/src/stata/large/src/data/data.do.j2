@@ -10,6 +10,9 @@
 clear all
 set more off
 
+// Load raw data
+import delimited "data/raw/data.csv", clear
+
 {{ atoms.stata_data }}
 
 // Save processed data

@@ -51,7 +51,7 @@ templates:
     run: make
     blocks:
       - devcontainer
-      - data/medium-large
+      - data/small
       - assets/large
       - src/stata/small
       - make
@@ -71,6 +71,7 @@ templates:
       - src/stata/medium
       - tests/stata
       - make
+      - tex
       - readme
       - dev/stata
   - id: stata-large

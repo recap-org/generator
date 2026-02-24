@@ -161,19 +161,6 @@ tests: ## Run tests
 	@echo "✅ $(GREEN_START)All tests passed!$(GREEN_END)"
 	{% endif %}
 
-{% if size =='large' or language == 'stata' %}
-symlinks: ## Create symlinks to assets in each LaTeX subdirectory
-	@echo "🛠️ $(GREEN_START)Creating symlinks to assets folder...$(GREEN_END)"
-	@for dir in ./tex/*/; do \
-		dir=$${dir%/}; \
-		if [ -d "$$dir" ]; then \
-			echo "Creating symlinks in $$dir..."; \
-			ln -sf "../../assets" "$$dir/assets"; \
-		fi; \
-	done
-	@echo "✅ $(GREEN_START)Done!$(GREEN_END)"
-
-{% endif %}
 help: ## Display this help message
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 

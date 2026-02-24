@@ -1,3 +1,9 @@
+% define path information
+\newcommand{\assets}{../../assets/}
+\newcommand{\tables}{\assets tables/}
+\newcommand{\figures}{\assets figures/}
+\newcommand{\static}{\assets static/}
+
 \def\anonymized{0} % uncomment to compile the non-anonymized version of the document
 % \def\anonymized{1} % uncomment to compile the anonymized version of the document
 
@@ -13,7 +19,7 @@
   lineno,fancyhdr,
   natbib,
   setspace,siunitx,
-  xr,appendix,
+  appendix,<! if size == 'large' !>xr,<! endif !> 
   codehigh
 }
 \UseTblrLibrary{booktabs}
@@ -35,7 +41,7 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
-% \externaldocument{../appendix/main} % uncomment to tie to the external appendix
+<! if size == 'large' !>% \externaldocument{../appendix/main} % uncomment to tie to the external appendix<! endif !>
 
 \title{
   << atoms.paper.title >>
@@ -93,12 +99,12 @@
   \centering
   \label{tab:regression}
   \caption{<< atoms.paper.table_caption >>}
-  \input{./assets/tables/table.tex}
+  \input{\tables table.tex}
 \end{table}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics{./assets/figures/figure.pdf}
+  \includegraphics{\figures figure.pdf}
   \caption{<< atoms.paper.figure_caption >>}
   \label{fig:coefplot}
 \end{figure}
@@ -109,12 +115,12 @@
 \newpage
 %TC:ignore
 \bibliographystyle{aer}
-\bibliography{./assets/references}
+\bibliography{\assets references}
 %TC:endignore
 
-\newpage
-
 % ---- Appendix ----
+
+% \newpage
 %TC:ignore
 % \appendix
 % \appendixpage

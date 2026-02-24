@@ -38,6 +38,15 @@ jobs:
 
       - name: Run post-generation hooks
         run: python generator/post_hooks.py
+      
+      - name: Inject Stata license
+        env:
+          STATA_LICENSE: ${{ secrets.STATA_LICENSE }}
+        run: |
+          shopt -s nullglob
+          for file in out/*/stata.lic; do
+            printf '%s\n' "$STATA_LICENSE" > "$file"
+          done
 
       - name: Fix out/ ownership for tests
         run: sudo chown -R $USER:$USER out

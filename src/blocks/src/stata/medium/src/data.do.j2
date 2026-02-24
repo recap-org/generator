@@ -1,0 +1,22 @@
+/* ==============================================================================
+   Analysis
+   
+   This script:
+   - Cleans raw data into processed data
+   - Saves processed data
+============================================================================== */
+
+// Setup
+clear all
+set more off
+
+// Load raw data
+import delimited "data/raw/data.csv", clear
+
+{{ atoms.stata_data }}
+
+// Save processed data
+export delimited "data/processed/data.csv", replace
+
+// Display confirmation message
+display "Data cleaning complete. Processed data saved to data/processed/data.csv"

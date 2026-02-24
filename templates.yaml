@@ -1,16 +1,16 @@
 release: 2026-q1
-templates: 
+templates:
   - id: r-small
     size: small
     language: r
     setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary'))"
     run: quarto render ./src/main.qmd
-    blocks: 
+    blocks:
       - devcontainer
       - data/small
       - assets/small-medium
       - quarto
-      - src/r-small
+      - src/r/small
       - readme
   - id: r-medium
     size: medium
@@ -18,12 +18,12 @@ templates:
     setup: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))"
     run: make
     test: make tests
-    blocks: 
+    blocks:
       - devcontainer
       - data/medium-large
       - assets/small-medium
       - quarto
-      - src/r-medium
+      - src/r/medium
       - tests/r/medium
       - make
       - readme
@@ -33,14 +33,62 @@ templates:
     run: make
     test: make tests
     post: Rscript -e "install.packages(c('tidyverse', 'modelsummary', 'testthat'))" && Rscript -e "renv::init()" && rm -rf ./renv/library ./renv/staging
-    blocks: 
+    blocks:
       - devcontainer
       - data/medium-large
       - assets/large
       - tex
+      - tex_extra
       - quarto
-      - src/r-large
+      - src/r/large
       - tests/r/large
       - make
       - readme
-      - r-dev
+      - dev/r
+  - id: stata-small
+    size: small
+    language: stata
+    setup: stata-mp -b requirements.do
+    run: make
+    blocks:
+      - devcontainer
+      - data/small
+      - assets/large
+      - src/stata/small
+      - make
+      - tex
+      - readme
+      - dev/stata
+  - id: stata-medium
+    size: medium
+    language: stata
+    setup: stata-mp -b requirements.do
+    run: make
+    test: make tests
+    blocks:
+      - devcontainer
+      - data/medium-large
+      - assets/large
+      - src/stata/medium
+      - tests/stata
+      - make
+      - tex
+      - readme
+      - dev/stata
+  - id: stata-large
+    size: large
+    language: stata
+    setup: stata-mp -b requirements.do
+    run: make
+    test: make tests
+    blocks:
+      - devcontainer
+      - data/medium-large
+      - assets/large
+      - tex
+      - tex_extra
+      - src/stata/large
+      - tests/stata
+      - make
+      - readme
+      - dev/stata

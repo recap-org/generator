@@ -19,7 +19,7 @@
   lineno,fancyhdr,
   natbib,
   setspace,siunitx,
-  xr,appendix,
+  appendix,<! if size == 'large' !>xr,<! endif !> 
   codehigh
 }
 \UseTblrLibrary{booktabs}
@@ -41,7 +41,7 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
-% \externaldocument{../appendix/main} % uncomment to tie to the external appendix
+<! if size == 'large' !>% \externaldocument{../appendix/main} % uncomment to tie to the external appendix<! endif !>
 
 \title{
   << atoms.paper.title >>
@@ -118,9 +118,9 @@
 \bibliography{\assets references}
 %TC:endignore
 
-\newpage
-
 % ---- Appendix ----
+
+% \newpage
 %TC:ignore
 % \appendix
 % \appendixpage

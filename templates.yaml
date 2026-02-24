@@ -38,6 +38,7 @@ templates:
       - data/medium-large
       - assets/large
       - tex
+      - tex_extra
       - quarto
       - src/r/large
       - tests/r/large
@@ -85,6 +86,7 @@ templates:
       - data/medium-large
       - assets/large
       - tex
+      - tex_extra
       - src/stata/large
       - tests/stata
       - make

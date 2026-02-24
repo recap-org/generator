@@ -15,7 +15,6 @@ datasummary_skim(
   fun_numeric = list(
     Mean = Mean,
     SD = SD
-  ),
-  escape = FALSE
+  )
 )
 ```

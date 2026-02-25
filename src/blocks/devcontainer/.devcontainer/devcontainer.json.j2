@@ -30,7 +30,8 @@
         }
     },
     {% if language=='stata' %}
-    "forwardedPorts": [ 10000 ],
+    "forwardPorts": [ 10000 ],
+    "postStartCommand": "install-stata-license",
     {% endif %}
     {% if language == 'r' and size == 'large' %}
     // 👇 restore renv packages upon container creation
@@ -51,11 +52,6 @@
 
         // 👇 Mount a volume containing external raw data into the project's data/raw folder.
         // "source=volume-name,target=${containerWorkspaceFolder}/data/raw,type=volume",
-        {% if language == 'stata' %}
-        
-        // 👇 direct Stata to the location of its license
-        "source=${localWorkspaceFolder}/stata.lic,target=/usr/local/stata/stata.lic,type=bind,consistency=cached"
-        {% endif %}
         {% if language == 'r' and size == 'large' %}
         
         // 👇 Optional: mount shared renv cache volume to avoid reinstalling

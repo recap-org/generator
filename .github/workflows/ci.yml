@@ -44,8 +44,8 @@ jobs:
           STATA_LICENSE: ${{ secrets.STATA_LICENSE }}
         run: |
           shopt -s nullglob
-          for file in out/*/stata.lic; do
-            printf '%s\n' "$STATA_LICENSE" > "$file"
+          for dir in out/stata-*; do
+            printf '%s\n' "$STATA_LICENSE" > "$dir/stata.lic"
           done
 
       - name: Fix out/ ownership for tests

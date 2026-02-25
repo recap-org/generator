@@ -28,7 +28,7 @@ If you want to keep working on this project (locally or in the cloud), create yo
 
 The RECAP documentation explains:
 - how to create your own repository,
-- how to run the template locally or in an isolated environment,
+- how to run the template in the cloud, locally or in an isolated environment {% if language == 'stata' %}(⚠️ isolated environment not supported on macOS){% endif %},
 - and how to choose the setup that fits your needs.
 
 ➡️ See **[How to run a RECAP template](https://recap-org.github.io/docs/running-templates/)** on the RECAP website.
@@ -36,7 +36,17 @@ The RECAP documentation explains:
 {% if language == 'stata' %}
 ## Using Stata in Codespaces and in isolated environments
 
-When using Stata in Codespaces or in an isolated environment, you need to provide a valid Stata licence. Open the file `./stata.lic` and enter your license information there.
+Codespaces and isolated environments (Docker dev containers) providing a valid license. We provide access to the Stata graphical interface in your browser. 
+
+**⚠️ for this template, isolated environments (i.e., DockDocker dev containers) are not supported on macOS.**
+
+### Entering your license information
+
+1. Copy `stata.lic.example` to `stata.lic`
+2. Fill it using information from your Stata license PDF
+3. Open a Terminal and run: `install-stata-license`
+
+### Using the Stata graphical interfance
 
 To open the Stata graphical interface, open a Terminal and run
 
